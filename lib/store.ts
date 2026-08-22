@@ -144,6 +144,29 @@ export async function clearSuccessSent(id: string): Promise<void> {
   });
 }
 
+export async function claimAlarmPing(
+  id: string,
+  force = false
+): Promise<{ plan: Plan; reminder: boolean } | null> {
+  return queueWrite(async () => {
+    const all = await readAll();
+    const plan = all[id];
+    if (!plan) return null;
+    if (plan.hostConfirmedAt && plan.guestConfirmedAt) return null;
+    const due = Date.now() >= new Date(plan.time).getTime();
+    if (!due && !force) return null;
+    if (plan.alarmSentAt && !force) {
+      const elapsed = Date.now() - new Date(plan.alarmSentAt).getTime();
+      if (elapsed < 60_000) return null;
+    }
+    const reminder = Boolean(plan.alarmSentAt);
+    plan.alarmSentAt = new Date().toISOString();
+    all[id] = plan;
+    await writeAll(all);
+    return { plan, reminder };
+  });
+}
+
 export async function markAlarmSent(id: string): Promise<Plan | null> {
   return queueWrite(async () => {
     const all = await readAll();

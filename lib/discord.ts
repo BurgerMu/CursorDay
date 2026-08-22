@@ -7,7 +7,7 @@ function ping(plan: Plan, role: Role) {
   return mention.trim() ? mention.trim() : `**${name}**`;
 }
 
-export function discordPayload(plan: Plan) {
+export function discordPayload(plan: Plan, reminder = false) {
   const missing: Role[] = [];
   if (!plan.hostConfirmedAt) missing.push("host");
   if (!plan.guestConfirmedAt) missing.push("guest");
@@ -17,10 +17,12 @@ export function discordPayload(plan: Plan) {
   const place = plan.place ? ` @ ${plan.place}` : "";
 
   return {
-    content: `${who} — confirm on SHOWUP. The plan already started.`,
+    content: reminder
+      ? `${who} — still not both here. Confirm on SHOWUP. (every 1 min)`
+      : `${who} — confirm on SHOWUP. The plan already started.`,
     embeds: [
       {
-        title: `LATE · ${plan.title}`,
+        title: `${reminder ? "STILL LATE" : "LATE"} · ${plan.title}`,
         description: `${plan.hostName} (host) and ${plan.guestName} (guest) both have to tap **I'm here**.\nMissing: ${missing.join(", ") || "nobody"}.`,
         color: 0xc1121f,
         fields: [

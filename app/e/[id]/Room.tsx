@@ -37,15 +37,21 @@ export default function Room({ id, who }: { id: string; who: Role }) {
 
   useEffect(() => {
     if (!plan) return;
-    if (plan.bothConfirmed || plan.alarmSentAt || !plan.isDue) return;
+    if (plan.bothConfirmed || !plan.isDue) return;
+    const last = plan.alarmSentAt ? new Date(plan.alarmSentAt).getTime() : 0;
+    if (last && now - last < 60_000) return;
     if (alarmLock.current) return;
     alarmLock.current = true;
     fetch(`/api/plans/${id}/alarm`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({}),
-    }).then(() => refresh().catch(() => undefined));
-  }, [plan, id]);
+    })
+      .then(() => refresh().catch(() => undefined))
+      .finally(() => {
+        alarmLock.current = false;
+      });
+  }, [plan, id, now]);
 
   const countdown = useMemo(() => {
     if (!plan) return "";
@@ -170,8 +176,9 @@ export default function Room({ id, who }: { id: string; who: Role }) {
         {error ? <p className="error">{error}</p> : null}
         <p className="note">
           Success = both cards say I&apos;m here. If time is up and a card is
-          still empty, Discord gets the missing name. Keep this tab open so the
-          auto-ping can fire.
+          still empty, Discord gets the missing name, then pings again every
+          1 minute until both confirm. Keep this tab open so the auto-ping can
+          fire.
         </p>
       </section>
       <PlansRail />
