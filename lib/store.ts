@@ -23,6 +23,7 @@ function toPublic(plan: Plan): PublicPlan {
     hostConfirmedAt: plan.hostConfirmedAt,
     guestConfirmedAt: plan.guestConfirmedAt,
     alarmSentAt: plan.alarmSentAt,
+    successSentAt: plan.successSentAt,
     createdAt: plan.createdAt,
     bothConfirmed: missing.length === 0,
     missing,
@@ -61,6 +62,7 @@ export async function createPlan(
     | "hostConfirmedAt"
     | "guestConfirmedAt"
     | "alarmSentAt"
+    | "successSentAt"
   >
 ): Promise<PublicPlan> {
   return queueWrite(async () => {
@@ -72,6 +74,7 @@ export async function createPlan(
       hostConfirmedAt: null,
       guestConfirmedAt: null,
       alarmSentAt: null,
+      successSentAt: null,
       createdAt: new Date().toISOString(),
     };
     all[id] = plan;
@@ -113,6 +116,31 @@ export async function confirmRole(
     all[id] = plan;
     await writeAll(all);
     return toPublic(plan);
+  });
+}
+
+export async function claimSuccessPing(id: string): Promise<Plan | null> {
+  return queueWrite(async () => {
+    const all = await readAll();
+    const plan = all[id];
+    if (!plan) return null;
+    if (!plan.hostConfirmedAt || !plan.guestConfirmedAt) return null;
+    if (plan.successSentAt) return null;
+    plan.successSentAt = new Date().toISOString();
+    all[id] = plan;
+    await writeAll(all);
+    return plan;
+  });
+}
+
+export async function clearSuccessSent(id: string): Promise<void> {
+  await queueWrite(async () => {
+    const all = await readAll();
+    const plan = all[id];
+    if (!plan) return;
+    plan.successSentAt = null;
+    all[id] = plan;
+    await writeAll(all);
   });
 }
 

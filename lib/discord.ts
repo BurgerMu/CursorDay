@@ -33,6 +33,29 @@ export function discordPayload(plan: Plan) {
   };
 }
 
+export function bothHerePayload(plan: Plan) {
+  const when = new Date(plan.time).toLocaleString();
+  const host = ping(plan, "host");
+  const guest = ping(plan, "guest");
+  const place = plan.place ? ` @ ${plan.place}` : "";
+
+  return {
+    content: `${host} and ${guest} — both confirmed. Everyone showed up.`,
+    embeds: [
+      {
+        title: `BOTH HERE · ${plan.title}`,
+        description: `${plan.hostName} (host) and ${plan.guestName} (guest) both tapped **I'm here**.`,
+        color: 0x3dff9a,
+        fields: [
+          { name: "When", value: when, inline: true },
+          { name: "Where", value: plan.place || "—", inline: true },
+        ],
+        footer: { text: `SHOWUP · both confirmed${place}` },
+      },
+    ],
+  };
+}
+
 export async function sendDiscord(webhookUrl: string, payload: unknown) {
   const res = await fetch(webhookUrl, {
     method: "POST",

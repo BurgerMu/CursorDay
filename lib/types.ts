@@ -13,6 +13,7 @@ export type Plan = {
   hostConfirmedAt: string | null;
   guestConfirmedAt: string | null;
   alarmSentAt: string | null;
+  successSentAt: string | null;
   createdAt: string;
 };
 

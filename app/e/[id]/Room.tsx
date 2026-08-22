@@ -67,8 +67,8 @@ export default function Room({ id, who }: { id: string; who: Role }) {
         body: JSON.stringify({ role: who }),
       });
       const data = await res.json();
+      if (data.plan) setPlan(data.plan);
       if (!res.ok) throw new Error(data.error);
-      setPlan(data.plan);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Confirm failed.");
     } finally {
