@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useMemo, useState } from "react";
+import PlansRail from "./PlansRail";
 
 function defaultTime() {
   const d = new Date(Date.now() + 3 * 60 * 1000);
@@ -52,8 +53,13 @@ export default function HomePage() {
   return (
     <main className="wrap">
       <div className="brand">
-        <span>SHOWUP</span>
-        <small>both must confirm</small>
+        <span>SHOWUP 1P</span>
+        <small>INSERT COIN · both confirm</small>
+      </div>
+      <div className="hud-bar">
+        <span>STAGE 01 · MAKE PLAN</span>
+        <span>HP ████████</span>
+        <span>DISCORD READY</span>
       </div>
       <section className="ticket">
         <h1>Make a plan. Both of you tap. Discord handles the rest.</h1>
@@ -72,6 +78,11 @@ export default function HomePage() {
             <a href={`/e/${created.id}?who=guest`}>
               Guest · {created.guestName}: {origin}/e/{created.id}?who=guest
             </a>
+            <div className="actions">
+              <button type="button" onClick={() => setCreated(null)}>
+                Back to main page
+              </button>
+            </div>
           </div>
         ) : (
           <form onSubmit={onSubmit}>
@@ -125,6 +136,7 @@ export default function HomePage() {
           </form>
         )}
       </section>
+      <PlansRail />
     </main>
   );
 }

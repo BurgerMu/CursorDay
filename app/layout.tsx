@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
-import { Fraunces, Source_Serif_4 } from "next/font/google";
+import { Press_Start_2P, VT323 } from "next/font/google";
 import "./globals.css";
 
-const display = Fraunces({
+const display = Press_Start_2P({
   subsets: ["latin"],
+  weight: "400",
   variable: "--font-display",
 });
 
-const body = Source_Serif_4({
+const body = VT323({
   subsets: ["latin"],
+  weight: "400",
   variable: "--font-body",
 });
 
@@ -22,7 +24,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${body.variable}`}>{children}</body>
+      <body className={`${display.variable} ${body.variable}`}>
+        <div className="crt" aria-hidden />
+        {children}
+      </body>
     </html>
   );
 }

@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { isDiscordWebhook } from "@/lib/discord";
-import { createPlan } from "@/lib/store";
+import { createPlan, listPublicPlans } from "@/lib/store";
+
+export async function GET() {
+  const plans = await listPublicPlans();
+  return NextResponse.json({ plans });
+}
 
 export async function POST(request: Request) {
   const body = await request.json();

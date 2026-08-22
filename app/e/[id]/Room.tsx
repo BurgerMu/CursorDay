@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import PlansRail from "@/app/PlansRail";
 import type { PublicPlan, Role } from "@/lib/types";
 
 function label(plan: PublicPlan, role: Role) {
@@ -115,8 +116,13 @@ export default function Room({ id, who }: { id: string; who: Role }) {
   return (
     <main className="wrap">
       <div className="brand">
-        <a href="/">SHOWUP</a>
-        <small>you are the {who}</small>
+        <a href="/">Back to main page</a>
+        <small>PLAYER {who === "host" ? "1" : "2"} · {who}</small>
+      </div>
+      <div className="hud-bar">
+        <span>{plan.bothConfirmed ? "CLEAR" : plan.isDue ? "DANGER" : "WAIT"}</span>
+        <span>HP {plan.bothConfirmed ? "████████" : "████░░░░"}</span>
+        <span>{countdown}</span>
       </div>
       <section className="ticket">
         {plan.bothConfirmed ? (
@@ -168,6 +174,7 @@ export default function Room({ id, who }: { id: string; who: Role }) {
           auto-ping can fire.
         </p>
       </section>
+      <PlansRail />
     </main>
   );
 }

@@ -90,6 +90,15 @@ export async function getPublicPlan(id: string): Promise<PublicPlan | null> {
   return plan ? toPublic(plan) : null;
 }
 
+export async function listPublicPlans(): Promise<PublicPlan[]> {
+  const all = await readAll();
+  return Object.values(all)
+    .map(toPublic)
+    .sort(
+      (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime()
+    );
+}
+
 export async function confirmRole(
   id: string,
   role: Role
